@@ -49,12 +49,12 @@ function checkUsers() {
 async function startLocalStream(){ 
     console.log('[NOVNC] empezando stream local');
     // Obtener el stream del usuario
-    if(!canvas){
+    if(!cropCanvas){
         console.log('[NOVNC] Error: no CANVAS');
         users = false;
         return
     }
-    stream = canvas.captureStream();
+    stream = cropCanvas.captureStream();
 
     // Establecer cual es el localStream
     localStream = stream;

@@ -314,6 +314,10 @@
             autocomplete="off" spellcheck="false" tabindex="-1"></textarea>
     </div>
 
+    <div id="cropped-img-container">
+        <canvas id="cropped-img" width="960" height="480" style="background-color: #ccc;"></canvas>
+    </div>
+
     <audio id="noVNC_bell">
         <source src="app/sounds/bell.oga" type="audio/ogg">
         <source src="app/sounds/bell.mp3" type="audio/mpeg">
@@ -340,7 +344,8 @@
             document.dispatchEvent(onCreateRoom)
         }
 
-        var canvas = document.querySelector('#noVNC_container canvas')
+        var canvas = document.querySelector('#noVNC_container canvas');
+        var cropCanvas = document.getElementById('cropped-img');
         // Search for canvas element
         setInterval(function(){
             canvas = document.querySelector('#noVNC_container canvas')
@@ -351,12 +356,25 @@
                 users = false
             }else{
                 if(!stream_set){
+                    stream_set = true;
                     // Send message to parent
-                    parent.postMessage(JSON.stringify({'start_stream':true}),'*')
-                    console.log('[NOVNC] POSTED MSG')
+                    parent.postMessage(JSON.stringify({'start_stream':true}),'*');
+                    console.log('[NOVNC] POSTED MSG');
+                    // Draw cropped video on canvas
+                    let ctx = cropCanvas.getContext('2d');
+                    (function loop(){
+                        if(stream_set){
+                            ctx.drawImage(canvas, 
+                                0, 0,       // Start at origin of the original frame
+                                860, 430,   // Crop video frame
+                                0, 0,       // Place at origin of canvas
+                                960, 480);      // Scale
+                            setTimeout(loop, 1000/30); // Drawing at 30 fps
+                        }
+                    })();
+
                     // Get the stream
-                    let stream = canvas.captureStream()
-                    stream_set = true
+                    //let stream = cropCanvas.captureStream();
                 }
             }
         },2000)
