@@ -325,60 +325,63 @@
     <script>
         'use strict';
 
-        const onCreateRoom = new Event('oncreateroom');
-        var stream_set = false;
-        let room_name;
-        let users = false;
-        let streamws;
-        let server;
+        const onCreateRoom = new Event('oncreateroom')
+        var stream_set = false
+        let room_name
+        let users = false
+        let streamws
+        let server
+        let proto
 
         function createRoom(){
             room_name = Date.now()+Math.round(Math.random()*10000);
             console.log('[NOVNC] room name: ', room_name);
             // Throw event to create streamws
-            document.dispatchEvent(onCreateRoom);
+            document.dispatchEvent(onCreateRoom)
         }
 
-        var canvas = document.querySelector('#noVNC_container canvas');
+        var canvas = document.querySelector('#noVNC_container canvas')
         // Search for canvas element
         setInterval(function(){
-            canvas = document.querySelector('#noVNC_container canvas');
+            canvas = document.querySelector('#noVNC_container canvas')
             if(canvas === null){
-                canvas = document.querySelector('#noVNC_container canvas');
-                console.log('[NOVNC] ',canvas);
-                stream_set = false;
-                users = false;
+                canvas = document.querySelector('#noVNC_container canvas')
+                console.log('[NOVNC] ',canvas)
+                stream_set = false
+                users = false
             }else{
                 if(!stream_set){
                     // Send message to parent
-                    parent.postMessage(JSON.stringify({'start_stream':true}),'*');
-                    console.log('[NOVNC] POSTED MSG');
+                    parent.postMessage(JSON.stringify({'start_stream':true}),'*')
+                    console.log('[NOVNC] POSTED MSG')
                     // Get the stream
-                    let stream = canvas.captureStream();
-                    stream_set = true;
+                    let stream = canvas.captureStream()
+                    stream_set = true
                 }
             }
-        },2000);
+        },2000)
 
         window.addEventListener('message', function(e){
-            console.log('[NOVNC] mensaje: ', e.data);
+            console.log('[NOVNC] mensaje: ', e.data)
             let data = JSON.parse(e.data);
             if(data['command'] === 'start'){
                 // Set server variable
-                server = data['server'];
+                server = data['server']
+                proto = data['proto']
+                console.log("SERVER: ",server, "PROTOCOL: ", proto)
 
                 // Creo la sala
-                createRoom();
+                createRoom()
 
                 console.log('Empezar el stream');
                 // Send stream_room to parent
-                parent.postMessage(JSON.stringify({'stream':room_name}),'*');
+                parent.postMessage(JSON.stringify({'stream':room_name}),'*')
                 // Check users until both are connected
                 setInterval(function(){
                     if(!users){
-                        checkUsers();
+                        checkUsers()
                     }
-                },2000);
+                },2000)
             }
         });
     </script>
