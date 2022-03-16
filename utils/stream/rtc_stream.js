@@ -22,8 +22,15 @@ const offerOptions = {
 };
 
 var configuration = {
-    "iceServers": [{ "urls": "stun:stun.1.google.com:19302" }]
+    "iceServers": [
+        { 
+            "urls": "turn:212.128.254.32:20500?transport=tcp",
+            "username":"danielhervas",
+            "credential":"danielhervas"
+        }
+    ]
 };
+
 
 let iceCandidates = [];
 
